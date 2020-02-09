@@ -26,17 +26,29 @@ with open('productdata.csv', newline='') as csvfile:
 
 
 while True:
-	print("Please enter a prefix (ctrl-c to exit): ")
+	print()
+	print("Please enter a product identifier or type 'q' to quit: ")
+	print()
+
 	prefix = input()
+	print()
+	if prefix == "q" or prefix == "quit" or prefix == "exit":
+		break
 	got = trie.values(prefix)
+
 	if len(got) == 0:
 		print("No matches")
 	elif len(got) == 1:
 		print("Ringing up: ")
-		print(got)
+		print()
+		print("%-15s %-20s" %("Product ID", "Product name"))		
+		print("%-15s %-20s" %(g[0], g[1]))
 	else:
-		print("Matches: ")
-		print(got)
+		print("Mutiple matching products found: ")
+		print()		
+		print("%-15s %-20s" %("Product ID", "Product name"))
+		for g in got:
+			print("%-15s %-20s" %(g[0], g[1]))
 
 		
 
