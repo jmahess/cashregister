@@ -37,17 +37,61 @@ while True:
 
 	if prefix == "h" or prefix == "help":
 		print("Use the following commands:")
-		print("%-15s %40s" %("Command", "Description"))
-		print("%-15s %40s" %("help", "List help"))
-		print("%-15s %40s" %("quit", "Quit / exit the program"))
-		print("%-15s %40s" %("rungup", "List the rung up items"))
-		print("%-15s %40s" %("total", "Calculate the total bill and finish"))
+		print()
+		print("%-15s %-40s" %("Command", "Description"))
+		print("%-15s %-40s" %("help", "List help"))
+		print("%-15s %-40s" %("quit", "Quit / exit the program"))
+		print("%-15s %-40s" %("rungup", "List the rung up items"))
+		print("%-15s %-40s" %("total", "Calculate the total bill and finish"))
 		continue
 
+	# functionality to total up and calculate taxes
+	if prefix == "t" or prefix == "total":
+		print("%-18s %-9s" %("Product name", "Price"))	
+		total = 0 # the total amount
+		totalCountyTaxable = 0 # the amount taxable by the county
+		for r in rungup:	
+			total += float(products[r]["price"]) # add up the total amounts
+			if products[r]["category"] != "g":
+				totalCountyTaxable += float(products[r]["price"]) # only add non grocery items to 
+				# the county taxable amount
+		print()
+		print("%-18s %-9s" %("Subtotal: ", total))
+		# add up the tax, 6.3% state + 2% city (8.3%) 
+		# on everything, and 0.7% county on non grocery items. Round to 2 decimal places, dollars and cents		
+		statetax = round(total*0.063)
+		countytax = round(totalCountyTaxable*0.007, 2)
+		citytax = round(total*0.02)
+		tax = statetax + countytax + citytax
+		print("%-18s %-9s" %("Tax: ", tax))
+		print("%-18s %-9s" %("Total due: ", round(tax + total, 2)))
+		print()
 
+		print("Please enter the amount paid by the customer:")
+		customerAmount = input()
+		print()
+		print("Receipt:")
+		print()
+		print("%-18s %-18s %-10s %-17s" %("Product name", "Product identifier", "Price", "Tax category"))	
+
+		for id in rungup:	
+			print("%-18s %-18s %-10s %-17s" %(products[id]["name"], id, products[id]["price"], products[id]["category"]))	
+
+		print()
+		print("%-18s %-9s" %("State tax: ", statetax))
+		print("%-18s %-9s" %("Total due: ", round(tax + total, 2)))
+		print()
+
+
+
+		break
+
+	# exit the program functionality
 	if prefix == "q" or prefix == "quit" or prefix == "exit":
 		break
 
+	# functionlity to list the rung up items. Not in the problem set but useful to see
+	# what has been rung up so far
 	if prefix == "r" or prefix == "rungup":
 		print("Rung up items so far: ")
 		print()
