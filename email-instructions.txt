@@ -1,0 +1,5 @@
+I'm sending you the programming assignment. This is the next step in our evaluation process.
+
+You are free to implement the assignment using whatever programming language and libraries you want. It is designed so it may take several days to complete, assuming a candidate cannot spare more than a couple of hours a day. We are looking for quality, not a quick prototype.
+
+Taking into account your schedule, please provide an estimate of how long it might take you to finish. You are welcome to ask me any questions.
