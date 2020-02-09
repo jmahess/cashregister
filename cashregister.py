@@ -59,16 +59,16 @@ while True:
 		print("%-18s %-9s" %("Subtotal: ", total))
 		# add up the tax, 6.3% state + 2% city (8.3%) 
 		# on everything, and 0.7% county on non grocery items. Round to 2 decimal places, dollars and cents		
-		statetax = round(total*0.063)
+		statetax = round(total*0.063, 2)
 		countytax = round(totalCountyTaxable*0.007, 2)
-		citytax = round(total*0.02)
-		tax = statetax + countytax + citytax
+		citytax = round(total*0.02, 2)
+		tax = round(statetax + countytax + citytax, 2)
 		print("%-18s %-9s" %("Tax: ", tax))
 		print("%-18s %-9s" %("Total due: ", round(tax + total, 2)))
 		print()
 
 		print("Please enter the amount paid by the customer:")
-		customerAmount = input()
+		customerAmount = float(input())
 		print()
 		print("Receipt:")
 		print()
@@ -78,11 +78,18 @@ while True:
 			print("%-18s %-18s %-10s %-17s" %(products[id]["name"], id, products[id]["price"], products[id]["category"]))	
 
 		print()
+		print("%-18s %-9s" %("Subtotal: ", total))
+
 		print("%-18s %-9s" %("State tax: ", statetax))
+		print("%-18s %-9s" %("County tax: ", countytax))	
+		print("%-18s %-9s" %("City tax: ", citytax))	
+
 		print("%-18s %-9s" %("Total due: ", round(tax + total, 2)))
+		print("%-18s %-9s" %("Amount paid: ", customerAmount))
+		change = customerAmount - tax - total
+		print("%-18s %-9s" %("Change: ", round(change, 2)))
 		print()
-
-
+		print("Thank you! Have a nice day!")
 
 		break
 
