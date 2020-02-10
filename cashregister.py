@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
+# Author: John Maheswaran
 
 import csv # used to read csv files 
-from pytrie import StringTrie # used to match prefixes in better than O(n) time.
-# O(n) time would be the case if we did not use a trie and instead naively looked
-#  through all the n strings and check one by one
+from pytrie import StringTrie # used to match prefixes efficiently.
+# A trie allows you to match prefixes efficiently instead of the naive approach of looking
+#  through all the strings and checking one by one, if we used a list instead of a trie
 import locale # used for formatting the currency in prices
 
-products = dict() # a dict is a hashmap representing the products, allows O(1) lookup of product price 
+products = dict() # a dict is a hashmap representing the products, allows constant time lookup of product price 
 # informaton based on the product id
 
-rungup = set() # this stores the products that we have rung up and allows O(1) insertion time
+rungup = set() # this stores the products that we have rung up and allows constant insertion time
 
 trie=StringTrie() # a trie that allows us to look up all the strings matching a
 # prefix in faster than O(n) time where n is the number of strings
@@ -37,10 +38,9 @@ try:
 			price = row[2]
 			category = row[3]
 			# add the product to the product hashmap so we can look up the product information 
-			# based on product ID in O(1) time
+			# based on product ID in constant time
 			products[id] = {"name" : name, "price" : price, "category" : category}
-			# add the product to the trie so we can look up matches based on a prefix 
-			# in better than O(n) time
+			# add the product to the trie so we can look up matches based on a prefix efficiently
 			trie[id] = (id, name, price)
 except:
 	# if opening the file fails or the file does not exist, print an error message and exit
@@ -154,7 +154,7 @@ while True:
 		# break to ensure that we exit the while loop and the program completes and exits
 		break
 
-	# prefix matching values from the trie - trie provides faster than O(n) prefix matching against n strings
+	# prefix matching values from the trie - trie provides efficient prefix matching against strings
 	matches = trie.values(userInput)
 
 	# case where nothing matched
