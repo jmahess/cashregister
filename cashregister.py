@@ -17,12 +17,13 @@ trie=StringTrie() # a trie that allows us to look up all the strings matching a
 # set the locate for currency formatting
 locale.setlocale( locale.LC_ALL, '' )
 
+# first we will get the csv file name from the user
 print("Please enter the csv product data filename or press ENTER to use the default (productdata.csv)")
 filename = input()
 if len(filename) == 0:
 	filename = 'productdata.csv'
 
-
+# use a try block in case opening the csv file fails
 try:
 	# when to program starts it reads the product data from the productdata.csv file
 	with open(filename, newline='') as csvfile:
@@ -30,6 +31,7 @@ try:
 		csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
 		# iterate over each row in the csv file and store the data in our datastructures
 		for row in csvreader:
+			# get the values out of each row
 			id = row[0]
 			name = row[1]
 			price = row[2]
@@ -41,7 +43,7 @@ try:
 			# in better than O(n) time
 			trie[id] = (id, name, price)
 except:
-	print("Failed opening the csv file, exiting...")
+	print("Failed to open the csv file, exiting...")
 	quit()
 
 # now start an indefinite loop to process user input data. We will break out of the loop
@@ -56,6 +58,11 @@ while True:
 	userInput = input()
 	print()
 
+	# handle the user asking to exit the program
+	if userInput == "q" or userInput == "quit" or userInput == "exit":
+		break
+
+	# handle the user asking for help
 	if userInput == "h" or userInput == "help":
 		print("Use the following commands:")
 		print()
@@ -66,6 +73,17 @@ while True:
 		print("%-15s %-40s" %("total", "Calculate the total bill and finish"))
 		continue
 
+	# functionlity to list the rung up items. Not in the problem set but useful to see
+	# what has been rung up so far
+	if userInput == "r" or userInput == "rungup":
+		print("Rung up items so far: ")
+		print()
+		print("%-18s %9s" %("Product name", "Price"))	
+		# iterate through all the rung up items and print them out
+		for r in rungup:	
+			print("%-18s %9s" %(products[r]["name"], locale.currency(float(products[r]["price"]))))		
+		continue
+
 	# functionality to total up and calculate taxes
 	if userInput == "t" or userInput == "total":
 		# do not compute the total if no items have been added, instead tell
@@ -74,9 +92,11 @@ while True:
 			print("Please ring up some items before calculating the total")
 			continue
 
+		# print out the product names and prices, as required
 		print("%-18s %9s" %("Product name", "Price"))	
 		total = 0 # the total amount
 		totalCountyTaxable = 0 # the amount taxable by the county
+		# iterate over each of the rung up items 
 		for r in rungup:	
 			total += float(products[r]["price"]) # add up the total amounts, need to cast the price to a float
 			# as the price is a decimal value
@@ -96,26 +116,28 @@ while True:
 		print()
 
 		# get the amount paid by the customer
-		customerAmount = 0
+		customerAmount = -1
 		while customerAmount < round(tax + total, 2):
 			print("Please enter the amount paid by the customer:")
 			inputFromUser = input()
+			# use a try catch block to handle the user entering text instead of a number
 			try:
 				customerAmount = float(inputFromUser)	
 			except:
 				print("Please enter a numerical value")
 			if customerAmount < round(tax + total, 2):
 				print("The amount paid by the customer must not be less than the amount due")
-
 		print()
+		# now print out the receipt
 		print("Receipt:")
 		print()
+		# print the column headings
 		print("%-18s %-18s %10s %-17s" %("Product name", "Product identifier", "Price", "Tax category"))	
-
+		# print out each of the rung up products
 		for id in rungup:	
 			print("%-18s %-18s %10s %-17s" %(products[id]["name"], id, locale.currency(float(products[id]["price"])), products[id]["category"]))	
 		print()
-		# print out the subtotal and taxes
+		# print out the subtotal and taxes, formatting as a currency (dollar amount)
 		print("%-18s %9s" %("Subtotal: ", locale.currency(total)))
 		print("%-18s %9s" %("State tax: ", locale.currency(statetax)))
 		print("%-18s %9s" %("County tax: ", locale.currency(countytax)))	
@@ -126,46 +148,41 @@ while True:
 		change = customerAmount - tax - total
 		print("%-18s %9s" %("Change: ", locale.currency(round(change, 2))))
 		print()
+		# print a goodbye message
 		print("Thank you! Have a nice day!")
+		# break to ensure that we exit the while loop and the program completes and exits
 		break
 
-	# exit the program functionality
-	if userInput == "q" or userInput == "quit" or userInput == "exit":
-		break
-
-	# functionlity to list the rung up items. Not in the problem set but useful to see
-	# what has been rung up so far
-	if userInput == "r" or userInput == "rungup":
-		print("Rung up items so far: ")
-		print()
-		print("%-18s %9s" %("Product name", "Price"))	
-		# iterate through all the rung up items and print them out
-		for r in rungup:	
-			print("%-18s %9s" %(products[r]["name"], locale.currency(float(products[r]["price"]))))		
-		continue
-
-	# matching values
+	# prefix matching values from the trie - trie provides faster than O(n) prefix matching against n strings
 	matches = trie.values(userInput)
 
 	# case where nothing matched
 	if len(matches) == 0:
 		print("No matches")
 	# case where exactly one item matched
-	elif len(matches) == 1:
-		print("Ringing up: ")
-		print()
-		print("%-18s %9s" %("Product name", "Price"))		
+	elif len(matches) == 1:	
 		# get the item and the relevant fields
 		item = matches[0]
 		id = item[0]
 		name = item[1]
 		price = item[2]
+		# if an item has already been rung up then print a message and continue
+		if id in rungup:
+			print("That item has already been rung up")
+			continue
+		# ring up that one item
+		print("Ringing up: ")
+		print()
+		print("%-18s %9s" %("Product name", "Price"))	
+
 		print("%-18s %9s" %(name, locale.currency(float(price)))) # print the name and price our
 		rungup.add(id) # add the product ID to the set of rung up items
 	# case where multiple products match
 	else:
+		# if multiple products match the prefix then print them out but do not ring them up
 		print("Mutiple matching products found: ")
-		print()		
+		print()	
+		# print out the matching products	
 		print("%-15s %-20s" %("Product ID", "Product name"))
 		for item in matches:
 			id = item[0]
