@@ -17,22 +17,32 @@ trie=StringTrie() # a trie that allows us to look up all the strings matching a
 # set the locate for currency formatting
 locale.setlocale( locale.LC_ALL, '' )
 
-# when to program starts it reads the product data from the productdata.csv file
-with open('productdata.csv', newline='') as csvfile:
-	# set the reader to comma separated values
-	csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-	# iterate over each row in the csv file and store the data in our datastructures
-	for row in csvreader:
-		id = row[0]
-		name = row[1]
-		price = row[2]
-		category = row[3]
-		# add the product to the product hashmap so we can look up the product information 
-		# based on product ID in O(1) time
-		products[id] = {"name" : name, "price" : price, "category" : category}
-		# add the product to the trie so we can look up matches based on a prefix 
-		# in better than O(n) time
-		trie[id] = (id, name, price)
+print("Please enter the csv product data filename or press ENTER to use the default (productdata.csv)")
+filename = input()
+if len(filename) == 0:
+	filename = 'productdata.csv'
+
+
+try:
+	# when to program starts it reads the product data from the productdata.csv file
+	with open(filename, newline='') as csvfile:
+		# set the reader to comma separated values
+		csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+		# iterate over each row in the csv file and store the data in our datastructures
+		for row in csvreader:
+			id = row[0]
+			name = row[1]
+			price = row[2]
+			category = row[3]
+			# add the product to the product hashmap so we can look up the product information 
+			# based on product ID in O(1) time
+			products[id] = {"name" : name, "price" : price, "category" : category}
+			# add the product to the trie so we can look up matches based on a prefix 
+			# in better than O(n) time
+			trie[id] = (id, name, price)
+except:
+	print("Failed opening the csv file, exiting...")
+	quit()
 
 # now start an indefinite loop to process user input data. We will break out of the loop
 # either when the user quits or when they reach the end of selecting products, ringing them
