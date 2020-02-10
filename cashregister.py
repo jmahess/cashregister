@@ -43,6 +43,7 @@ try:
 			# in better than O(n) time
 			trie[id] = (id, name, price)
 except:
+	# if opening the file fails or the file does not exist, print an error message and exit
 	print("Failed to open the csv file, exiting...")
 	quit()
 
